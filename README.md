@@ -17,31 +17,32 @@ Simulate and detect an SSH brute-force attack using system logs (`journalctl`) i
 
 Multiple failed SSH login attempts were generated using invalid credentials:
 
-```bash
 ssh root@127.0.0.1
 ssh kali@127.0.0.1
 
-Log Analysis
+------------------------------------------------------------------------------------------------------------------------------------
+
+## Log Analysis
+
 1. Identify Failed Login Attempts
-journalctl -u ssh --no-pager | grep "Failed password"
+Command: journalctl -u ssh --no-pager | grep "Failed password"
 
 2. Count Failed Attempts
-journalctl -u ssh | grep "Failed password" | wc -l
+Command: journalctl -u ssh | grep "Failed password" | wc -l
 
 3. Extract Attacker IP Address
-journalctl -u ssh | grep "Failed password" | awk '{print $(NF-3)}' | sort | uniq -c
+Command: journalctl -u ssh | grep "Failed password" | awk '{print $(NF-3)}' | sort | uniq -c
 
 4. Identify Targeted Users
-journalctl -u ssh | grep "Failed password" | awk '{print $(NF-5)}' | sort | uniq -c
+Command: journalctl -u ssh | grep "Failed password" | awk '{print $(NF-5)}' | sort | uniq -c
 
 5. Detect Successful Login
-journalctl -u ssh | grep "Accepted password"
+Command: journalctl -u ssh | grep "Accepted password"
 
 ------------------------------------------------------------------------------------------------------------------------------------
 
 ## Findings
 
-Findings
 Attack Type: SSH Brute Force
 Attacker IP: 127.0.0.1
 Targeted Users: root, kali
@@ -56,15 +57,20 @@ The logs indicate repeated failed login attempts from a single IP address within
 
 This behavior strongly suggests:  Potential account compromise after brute-force attack
 
-Detection Logic
+------------------------------------------------------------------------------------------------------------------------------------
+
+## Detection Logic
 
 A brute-force attack can be identified using:
-High number of failed login attempts
-Same source IP
-Short time interval
-Followed by successful authentication
+1. High number of failed login attempts
+2. Same source IP
+3. Short time interval
+4. Followed by successful authentication
 
-MITRE ATT&CK Mapping
+------------------------------------------------------------------------------------------------------------------------------------
+
+## MITRE ATT&CK Mapping
+
 T1110 — Brute Force
 T1078 — Valid Accounts
 
@@ -77,4 +83,25 @@ Implement account lockout policies
 Enable multi-factor authentication (MFA)
 Deploy fail2ban or similar tools
 Monitor authentication logs in SIEM
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+## 📸 Screenshots
+
+### 🔹 SSH Login Attempts
+
+![SSH Attempt](screenshots/1. ssh login attempt.png)
+
+### 🔹 Extracting Failed Logins
+
+![Failed Logs](screenshots/4. extracting only failed password logs.png)
+
+### 🔹 Extracting IP & Count
+
+![IP Extraction](screenshots/5. extracting failed password count and attacker ip address.png)
+
+### 🔹 Successful Login Detection
+
+![Accepted Login](screenshots/6. extracting accepted passwords and failed attempted login users.png)
+
 ------------------------------------------------------------------------------------------------------------------------------------
